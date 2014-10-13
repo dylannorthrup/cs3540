@@ -1,0 +1,43 @@
+DELIVERABLE FILES:
+- bank_account.c
+- bank_account.h
+- test_bank_account.c
+- Makefile
+
+The goal of this assignment is to reinforce and extend a student's knowledge of C.  Specifically, this assignment is to implement a bank account.  A bank account will consist of 3 attributes:
+
+* owner - string which is not NULL and has at least 1 character
+* account number - string which is not NULL, has at least 1 character, all characters are digits
+* balance - must be non-negative
+
+A bank account will have the following operations on it:
+
+* create_account
+  * input: owner, initial balance, account number
+  * output: pointer to a bank account
+  * return NULL is any input is not valid
+
+* display_account
+  * input - pointer to a bank account 
+  * displays all attributes of the account - format not specified
+  * assertion used to verify pointer to the bank account is not NULL
+
+* deposit
+  * input - pointer to bank account (cannot be NULL) & amount of deposit (must be positive)
+  * postcondition: amount has been added to balance
+  * returns false if amount of deposit is not positive - true otherwise
+  * assertion used to verify pointer to the bank account is not NULL
+
+* withdraw
+  * input - pointer to bank account (cannot be NULL) & amount of withdrawal (must be positive & cannot be larger than the balance
+  * postcondition: amount has been subtracted from balance
+  * returns false if amount of withdrawal is not valid - true otherwise
+  * assertion used to verify pointer to the bank account is not NULL
+
+* delete_account
+  * input - pointer to bank account 
+  * postcondition: all memory allocated to the bank account has been deallocated
+  * does nothing if input pointer is NULL
+
+You need to construct the files bank_account.h, bank_account.c, and test_bank_account.c which tests all the functions (both good data and bad data cases) in bank_account.h.  You need to construct a Makefile.  
+Please email your source code to your instructor by 8:00 am on Monday, September 15.

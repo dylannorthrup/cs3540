@@ -1,0 +1,173 @@
+#include "list.h"
+#include <stdlib.h>
+#include <assert.h>
+
+node* create_node (void* item)
+{
+  node* n = malloc (sizeof(node));
+  if (n != NULL)
+  {
+    n -> item = item;
+    n -> next = NULL;
+  }
+  return n;
+}
+
+list* create_list()
+{
+  list* l = malloc (sizeof (list));
+  if (l != NULL)
+  {
+    l -> front = NULL;
+    l -> rear = NULL;
+    l -> size = 0;
+  }
+  return l;
+}
+
+int is_empty (const list* l)
+{
+  assert (l != NULL);
+  return l -> size == 0;
+}
+
+int size (const list* l)
+{
+  assert (l != NULL);
+  return l -> size;
+}
+
+void append (list* l, void* item)
+{
+  assert (l != NULL);
+  node* n = create_node (item);
+  if (is_empty (l))
+  {
+    l -> front = n;
+    l -> rear = n;
+  }
+  else
+  {
+    l -> rear -> next = n;
+    l -> rear = n;
+  }
+  l -> size++;
+}
+
+void prepend (list* l, void* item)
+{
+  assert (l != NULL);
+  node* n = create_node (item);
+  if (is_empty (l))
+  {
+    l -> front = n;
+    l -> rear = n;
+  }
+  else
+  {
+    n -> next = l -> front;
+    l -> front  = n;
+  }
+  l -> size++;
+}
+
+int insert (list* l, void* item, int index)
+{
+  assert (l != NULL);
+  int valid = index >= 0 && index <= size(l);
+  if (valid)
+  {
+    if (index == 0)
+      prepend (l, item);
+    else if (index == size(l))
+      append (l, item);
+    else
+    {
+      node* n = l -> front;
+      int i = 0;
+      for (i = 0; i < index - 1; i++)
+	n = n -> next;
+      node* temp = create_node (item);
+      temp -> next = n -> next;
+      n -> next = temp;
+      l -> size++;
+    }
+  }
+  return valid;
+}
+
+int remove_from_list (list* l, int index)
+{
+  assert (l != NULL);
+  int valid = index >= 0 && index < size(l);
+  if (valid)
+  {
+    node* temp;
+    if (index == 0)
+    {
+      temp = l -> front;
+      l -> front = l -> front -> next;
+      if (l -> front == NULL)
+	l -> rear = NULL;
+    }
+    else
+    {
+      node* n = l -> front;
+      int i = 0;
+      for (i = 0; i < index - 1; i++)
+	n = n -> next;
+      temp = n -> next;
+      n -> next = temp -> next;
+      if (index == size(l) - 1)
+	l -> rear = n;
+    }
+    free (temp);
+    l -> size--;
+  }
+  return valid;
+}
+
+void* get (const list* l, int index)
+{
+  assert (l != NULL);
+  void* result = NULL;
+  if (0 <= index && index < size(l))
+  {
+    node* n = l -> front;;
+    int i = 0;
+    for (i = 0; i < index; i++)
+      n = n -> next;
+    result = n -> item;
+  }
+  return result;
+}
+
+int set (list* l, void* item, int index)
+{
+  assert (l != NULL);
+  int result = 0 <= index && index < size(l);
+  if (result)
+  {
+    node* n = l -> front;
+    int i;
+    for (i = 0; i < index; i++)
+      n = n -> next;
+    n -> item = item;
+  }
+  return result;
+}
+
+void delete_list (list* l)
+{
+  assert (l != NULL);
+  node* current = l -> front;
+  node* prev  = NULL;
+  int i = 0;
+  for (i = 0; i < size(l); i++)
+  {
+    prev = current;
+    current = current -> next;
+    free (prev);
+  }
+  free (l);
+}
