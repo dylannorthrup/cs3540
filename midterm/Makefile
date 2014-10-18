@@ -1,10 +1,4 @@
-all: fp_test tri_file appearance_locations
-
-appearance_locations: appearance_locations.o
-	gcc -o appearance_locations appearance_locations.o
-
-appearance_locations.o: appearance_locations.c
-	gcc -g -Wall -c appearance_locations.c
+all: fp_test tri_file 
 
 tri_file: tri_file.o
 	gcc -o tri_file tri_file.o
@@ -22,5 +16,5 @@ fp_test.o: fp_test.c football_player.h
 	gcc -g -Wall -c fp_test.c
 
 clean:
-	rm -f *o fp_test tri_file appearance_locations digits.txt letters.txt others.txt
+	rm -f *o fp_test tri_file digits.txt letters.txt others.txt
 
