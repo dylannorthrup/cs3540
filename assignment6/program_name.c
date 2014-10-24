@@ -3,11 +3,11 @@
 #include <string.h>
 
 /* Our structure */
-struct rec {
+typedef struct rec {
   char name[15];
   double price;
   int count;
-};
+} rec;
 
 #define DEBUG 1
 
@@ -65,6 +65,20 @@ FILE* open_for_reading(char* fname) {
   return fd;
 }
 
+rec* create_record(char* item, char* price, char* count) {
+  double p;
+  int c;
+  rec* ret_rec;
+  p = atof(price);
+  c = atoi(count);
+  ret_rec = malloc(sizeof(rec));
+  strcpy(ret_rec -> name, item);  // Deep copy of contents
+  ret_rec -> price = p;
+  ret_rec -> count = c;
+
+  // Now, return what we just created
+  return ret_rec;
+}
 
 void add_record(char* fname, char* item, char* price, char* count) {
   pdebug("Adding record\n");
@@ -76,6 +90,7 @@ void add_record(char* fname, char* item, char* price, char* count) {
   fd = open_for_writing(fname);
 
   // Create the record
+  my_record = create_record(char* item, char* price, char* count);
 
   // And add it to the fil
   int counter;
