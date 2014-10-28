@@ -13,7 +13,7 @@ typedef struct rec {
   int count;
 } rec;
 
-#define DEBUG 1
+#define DEBUG 0
 
 // Function prototypes
 
@@ -84,14 +84,19 @@ rec* create_record(char* item, char* price, char* count) {
   return ret_rec;
 }
 
+double item_sum(rec* r) {
+  double sum = r -> count * r -> price;
+  return sum;
+}
+
 void print_record(rec* r) {
   pdebug("Inside print_record");
   assert(r != NULL);
   assert(r -> name != NULL);
   pdebug("print_record: Nothing is NULL");
-  double sum = r -> count * r -> price;
+  double sum = item_sum(r);
   pdebug("print_record: Sum calculated");
-  printf("%s       %.2f  x %d = %.2f\n", r -> name, r -> price, r -> count, sum);
+  printf("%-10s       %8.2f  X  %3d = %8.2f\n", r -> name, r -> price, r -> count, sum);
 }
 
 void add_record(char* fname, char* item, char* price, char* count) {
@@ -128,13 +133,19 @@ void print_report(char* fname) {
   FILE *fd;
   struct rec* my_record;
   int buff_size = sizeof(struct rec);
+  double total = 0;
+  double sum;
   // Allocate memory for our records to be stored
   my_record = malloc(sizeof(struct rec));
   fd = open_for_reading(fname);
   while (fread(my_record, buff_size, 1, fd)) {
     pdebug("Passing off to print_record");
     print_record(my_record);
+    // And add the value to the total to be printed at the end
+    sum = item_sum(my_record);
+    total += sum;
   }
+  printf("                            Total = %8.2f\n", total);
 }
 
 void pdebug (const char* message) {
