@@ -124,7 +124,7 @@ void add_record(char* fname, char* item, char* price, char* count) {
   my_record = create_record(item, price, count);
 
   // Print out the record
-  print_record(my_record);
+//  print_record(my_record);
 
   // And add it to the file
   fwrite(my_record, sizeof(struct rec), 1, fd);
@@ -145,9 +145,6 @@ void delete_record(char* fname, char* item) {
 
   // Open input file
   in = open_for_reading(fname);
-  // Get a temporary file name for second file
-  //temp_name = tmpnam(NULL); 
-  printf("Temporary filename: %s\n", temp_name);
   // Open output file
   out = open_for_writing(temp_name);
   if(out == NULL) {
@@ -155,19 +152,27 @@ void delete_record(char* fname, char* item) {
   }
 
   while (fread(my_record, sizeof(struct rec), 1, in)) {
-    print_record(my_record);
+//    print_record(my_record);
     // If the item is equal to the record's name, move along
     if(strcmp(my_record -> name, item) == 0) {
-      printf("Item name is '%s' so I'm skipping\n", my_record -> name);
+//      printf("Item name is '%s' so I'm skipping\n", my_record -> name);
       continue;
     } else {  // Otherwise, print it out to the output file
-      printf("Item name is '%s' so I'm copying over\n", my_record -> name);
+//      printf("Item name is '%s' so I'm copying over\n", my_record -> name);
       pdebug("Writing out record to new file");
       fwrite(my_record, sizeof(struct rec), 1, out);
       pdebug("fwrite happened");
     }
       
-//    print_record(my_record);
+  }
+
+  // Now, let's close the file handles
+  fclose(in);
+  fclose(out);
+  // And rename the new filename to the old filename
+  int ret = rename(temp_name, fname);
+  if (ret != 0) { 
+    err_sys("Error: unable to rename file \n"); 
   }
 }
 
