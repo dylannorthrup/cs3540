@@ -17,6 +17,7 @@ typedef struct rec {
 
 // Function prototypes
 
+FILE* open_for_appending(char* fname);
 FILE* open_for_writing(char* fname);
 FILE* open_for_reading(char* fname);
 void add_record(char* fname, char* item, char* price, char* count);
@@ -52,9 +53,17 @@ void usage () {
 }
 
 // Do these in functions so I can encapsulate the logic
-FILE* open_for_writing(char* fname) {
+FILE* open_for_appending(char* fname) {
   FILE *fd;
   fd = fopen(fname, "ab");
+  if (!fd) {
+    err_sys("Unable to open file for appending");
+  }
+  return fd;
+}
+FILE* open_for_writing(char* fname) {
+  FILE *fd;
+  fd = fopen(fname, "wb");
   if (!fd) {
     err_sys("Unable to open file for writing");
   }
@@ -106,7 +115,7 @@ void add_record(char* fname, char* item, char* price, char* count) {
   struct rec* my_record;
 
   // Open up the file
-  fd = open_for_writing(fname);
+  fd = open_for_appending(fname);
 
   // Go to the end of the file
   fseek(fd, 0, SEEK_END);
@@ -118,27 +127,60 @@ void add_record(char* fname, char* item, char* price, char* count) {
   print_record(my_record);
 
   // And add it to the file
-  fwrite(my_record,sizeof(struct rec),1,fd);
+  fwrite(my_record, sizeof(struct rec), 1, fd);
 
   // And finish up here
   fclose(fd);
 }
 
+// The plan here will be to make a new file that contains all the records of the 
+// old file, except for the ones with the offending item name.
+// Once that's done, rename the new file to the old file and exit
 void delete_record(char* fname, char* item) {
-  err_sys ("Deleting record functionality not implemented yet\n");
+//  err_sys ("Deleting record functionality not implemented yet\n");
+  FILE *in;
+  FILE *out;
+  char* temp_name = "temp_file";
+  struct rec* my_record = malloc(sizeof(struct rec));
+
+  // Open input file
+  in = open_for_reading(fname);
+  // Get a temporary file name for second file
+  //temp_name = tmpnam(NULL); 
+  printf("Temporary filename: %s\n", temp_name);
+  // Open output file
+  out = open_for_writing(temp_name);
+  if(out == NULL) {
+    err_sys("Output file handle was NULL\n");
+  }
+
+  while (fread(my_record, sizeof(struct rec), 1, in)) {
+    print_record(my_record);
+    // If the item is equal to the record's name, move along
+    if(strcmp(my_record -> name, item) == 0) {
+      printf("Item name is '%s' so I'm skipping\n", my_record -> name);
+      continue;
+    } else {  // Otherwise, print it out to the output file
+      printf("Item name is '%s' so I'm copying over\n", my_record -> name);
+      pdebug("Writing out record to new file");
+      fwrite(my_record, sizeof(struct rec), 1, out);
+      pdebug("fwrite happened");
+    }
+      
+//    print_record(my_record);
+  }
 }
 
 void print_report(char* fname) {
 //  err_sys ("Printing report functionality not implemented yet\n");
   FILE *fd;
   struct rec* my_record;
-  int buff_size = sizeof(struct rec);
   double total = 0;
   double sum;
   // Allocate memory for our records to be stored
   my_record = malloc(sizeof(struct rec));
   fd = open_for_reading(fname);
-  while (fread(my_record, buff_size, 1, fd)) {
+  while (fread(my_record, sizeof(struct rec), 1, fd)) {
     pdebug("Passing off to print_record");
     print_record(my_record);
     // And add the value to the total to be printed at the end
@@ -146,6 +188,7 @@ void print_report(char* fname) {
     total += sum;
   }
   printf("                            Total = %8.2f\n", total);
+  fclose(fd);
 }
 
 void pdebug (const char* message) {
