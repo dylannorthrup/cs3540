@@ -12,6 +12,9 @@ test_write: test_write.o
 test_write.o: test_write.c
 	gcc -g -Wall -c test_write.c
 
+testprog: program_name
+	./test.sh
+
 program_name: program_name.o
 	gcc -o program_name program_name.o
 
