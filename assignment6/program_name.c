@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 /* Our structure */
 typedef struct rec {
@@ -80,24 +81,33 @@ rec* create_record(char* item, char* price, char* count) {
   return ret_rec;
 }
 
+void print_record(rec* r) {
+  pdebug("Inside print_record");
+  assert(r != NULL);
+  assert(r -> name != NULL);
+  pdebug("print_record: Nothing is NULL");
+  double sum = r -> count * r -> price;
+  pdebug("print_record: Sum calculated");
+  printf("%s       %f  x %d = %f\n", r -> name, r -> price, r -> count, sum);
+}
+
 void add_record(char* fname, char* item, char* price, char* count) {
   pdebug("Adding record\n");
   // Open file for reading/writing
   FILE *fd;
-  struct rec my_record;
+  struct rec* my_record;
 
   // Open up the file
   fd = open_for_writing(fname);
 
   // Create the record
-  my_record = create_record(char* item, char* price, char* count);
+  my_record = create_record(item, price, count);
+
+  // Print out the record
+  print_record(my_record);
 
   // And add it to the fil
-  int counter;
-  for ( counter=1; counter <= 10; counter++) {
-    fwrite(&my_record,sizeof(struct rec),1,fd);
-    printf("%d\n",my_record.count);
-  }
+  fwrite(&my_record,sizeof(struct rec),1,fd);
 
   // And finish up here
   fclose(fd);
@@ -110,6 +120,8 @@ void delete_record(char* fname, char* item) {
 
 void print_report(char* fname) {
   err_sys ("Printing report functionality not implemented yet\n");
+//  FILE *fd;
+//  struct rec* my_record;
 }
 
 void pdebug (const char* message) {
