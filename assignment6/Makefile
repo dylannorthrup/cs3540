@@ -22,5 +22,5 @@ program_name.o: program_name.c
 	gcc -g -Wall -c program_name.c
 
 clean:
-	rm -f *o program_name test_read test_write
+	rm -f *o fname program_name test_read test_write
 
