@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -53,7 +54,7 @@ void usage () {
 // Do these in functions so I can encapsulate the logic
 FILE* open_for_writing(char* fname) {
   FILE *fd;
-  fd = fopen(fname, "wb");
+  fd = fopen(fname, "ab");
   if (!fd) {
     err_sys("Unable to open file for writing");
   }
@@ -101,11 +102,9 @@ void add_record(char* fname, char* item, char* price, char* count) {
 
   // Open up the file
   fd = open_for_writing(fname);
-  int fdn = fileno(fd); // Need for fseek
 
   // Go to the end of the file
-  int pos = fseek(fd, 0, SEEK_END);
-  printf("DEBUG: Went to %i byte of file with file descriptor %i\n", pos, fdn);
+  fseek(fd, 0, SEEK_END);
 
   // Create the record
   my_record = create_record(item, price, count);
@@ -118,7 +117,6 @@ void add_record(char* fname, char* item, char* price, char* count) {
 
   // And finish up here
   fclose(fd);
-//  return 0;
 }
 
 void delete_record(char* fname, char* item) {
