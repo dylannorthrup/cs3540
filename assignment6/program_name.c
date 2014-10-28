@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 /* Our structure */
 typedef struct rec {
@@ -88,17 +90,22 @@ void print_record(rec* r) {
   pdebug("print_record: Nothing is NULL");
   double sum = r -> count * r -> price;
   pdebug("print_record: Sum calculated");
-  printf("%s       %f  x %d = %f\n", r -> name, r -> price, r -> count, sum);
+  printf("%s       %.2f  x %d = %.2f\n", r -> name, r -> price, r -> count, sum);
 }
 
 void add_record(char* fname, char* item, char* price, char* count) {
-  pdebug("Adding record\n");
+  pdebug("Adding record");
   // Open file for reading/writing
   FILE *fd;
   struct rec* my_record;
 
   // Open up the file
   fd = open_for_writing(fname);
+  int fdn = fileno(fd); // Need for fseek
+
+  // Go to the end of the file
+  int pos = fseek(fd, 0, SEEK_END);
+  printf("DEBUG: Went to %i byte of file with file descriptor %i\n", pos, fdn);
 
   // Create the record
   my_record = create_record(item, price, count);
@@ -106,8 +113,8 @@ void add_record(char* fname, char* item, char* price, char* count) {
   // Print out the record
   print_record(my_record);
 
-  // And add it to the fil
-  fwrite(&my_record,sizeof(struct rec),1,fd);
+  // And add it to the file
+  fwrite(my_record,sizeof(struct rec),1,fd);
 
   // And finish up here
   fclose(fd);
@@ -119,9 +126,17 @@ void delete_record(char* fname, char* item) {
 }
 
 void print_report(char* fname) {
-  err_sys ("Printing report functionality not implemented yet\n");
-//  FILE *fd;
-//  struct rec* my_record;
+//  err_sys ("Printing report functionality not implemented yet\n");
+  FILE *fd;
+  struct rec* my_record;
+  int buff_size = sizeof(struct rec);
+  // Allocate memory for our records to be stored
+  my_record = malloc(sizeof(struct rec));
+  fd = open_for_reading(fname);
+  while (fread(my_record, buff_size, 1, fd)) {
+    pdebug("Passing off to print_record");
+    print_record(my_record);
+  }
 }
 
 void pdebug (const char* message) {
