@@ -105,7 +105,7 @@ void print_record(rec* r) {
   pdebug("print_record: Nothing is NULL");
   double sum = item_sum(r);
   pdebug("print_record: Sum calculated");
-  printf("%-10s       %8.2f  X  %3d = %8.2f\n", r -> name, r -> price, r -> count, sum);
+  printf("%-20s %8.2f X %4d = %8.2f\n", r -> name, r -> price, r -> count, sum);
 }
 
 void add_record(char* fname, char* item, char* price, char* count) {
@@ -192,7 +192,7 @@ void print_report(char* fname) {
     sum = item_sum(my_record);
     total += sum;
   }
-  printf("                            Total = %8.2f\n", total);
+  printf("                               Total = %8.2f\n", total);
   fclose(fd);
 }
 
