@@ -1,0 +1,4 @@
+- Write a program that will create a simulation of a stopwatch.  
+- When the program starts the program will display the positive integers in order starting at 1 where there is 1 second between consecutive integers.  
+- The display will stop when the user enters control-C and begin again when the user enters control-C again.  
+- You will need to terminate the program with a the quit signal (control-\).
