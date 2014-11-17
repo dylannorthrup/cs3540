@@ -30,35 +30,36 @@ int main (int argc, char* argv[]) {
   alarm (1);
   if (sigsetjmp (alarm_jmp, 1) != 0) {
     secs_elapsed++;
-    if (secs_elapsed == 0) {
-      printf ("BOOM\n");
-      exit(0);
-    } else {
-      if(printing_enabled) {
-        printf ("%d\n", secs_elapsed);
-      }
-      alarm (1);
+    // Boolean to determine if we actuall output stuff
+    if(printing_enabled) {
+      printf ("%d\n", secs_elapsed);
     }
+    alarm (1);
   }
   while (1);
   exit(0);
 }
 
+// Pause and resume output on SIGINT (^C)
 static void sig_int (int signo) {
   if(printing_enabled) {
-    printf("\nPRINTING DISABLED - Press ^C again to resume printing\n"); // add a newline so the prompt isn't all funky
+    // Print out something to tell the user what's going on and how to restore output
+    printf("\nPRINTING DISABLED - Press ^C again to resume printing\n"); 
     printing_enabled = 0;
   } else {
-    printf("\nPRINTING ENABLED\n"); // add a newline so the prompt isn't all funky
+    // Tell them things are back
+    printf("\nPRINTING ENABLED\n"); 
     printing_enabled = 1;
   }
 }
 
+// Exit program on SIGQUIT (^\)  
 static void sig_quit (int signo) {
   printf("\n"); // add a newline so the prompt isn't all funky
   exit(0);
 }
 
+// Used for timing via sigalarm
 static void sig_alarm (int signo) {
   siglongjmp (alarm_jmp, 1);
 }
